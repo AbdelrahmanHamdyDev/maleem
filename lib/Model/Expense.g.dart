@@ -8,7 +8,7 @@ part of 'Expense.dart';
 
 class ExpenseAdapter extends TypeAdapter<Expense> {
   @override
-  final int typeId = 1;
+  final int typeId = 2;
 
   @override
   Expense read(BinaryReader reader) {

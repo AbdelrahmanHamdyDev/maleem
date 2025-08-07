@@ -4,14 +4,21 @@ part 'ExpenseGroup.g.dart';
 @HiveType(typeId: 1)
 class ExpenseGroup extends HiveObject {
   @HiveField(0)
-  String name;
+  String id;
 
   @HiveField(1)
-  String? notes;
+  String name;
 
   @HiveField(2)
+  String? notes;
+
+  @HiveField(3)
   DateTime createdAt;
 
-  ExpenseGroup({required this.name, this.notes, DateTime? createdAt})
-    : createdAt = createdAt ?? DateTime.now();
+  ExpenseGroup({
+    required this.id,
+    required this.name,
+    this.notes,
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 }
