@@ -17,21 +17,24 @@ class ExpenseGroupAdapter extends TypeAdapter<ExpenseGroup> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExpenseGroup(
-      name: fields[0] as String,
-      notes: fields[1] as String?,
-      createdAt: fields[2] as DateTime?,
+      id: fields[0] as String,
+      name: fields[1] as String,
+      notes: fields[2] as String?,
+      createdAt: fields[3] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExpenseGroup obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.notes)
+      ..write(obj.name)
       ..writeByte(2)
+      ..write(obj.notes)
+      ..writeByte(3)
       ..write(obj.createdAt);
   }
 
