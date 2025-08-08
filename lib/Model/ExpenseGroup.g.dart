@@ -18,23 +18,20 @@ class ExpenseGroupAdapter extends TypeAdapter<ExpenseGroup> {
     };
     return ExpenseGroup(
       id: fields[0] as String,
-      name: fields[1] as String,
-      notes: fields[2] as String?,
-      createdAt: fields[3] as DateTime?,
+      notes: fields[1] as String?,
+      createdAt: fields[2] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExpenseGroup obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name)
-      ..writeByte(2)
       ..write(obj.notes)
-      ..writeByte(3)
+      ..writeByte(2)
       ..write(obj.createdAt);
   }
 

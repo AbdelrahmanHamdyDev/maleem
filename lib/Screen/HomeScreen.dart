@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:maleem/Controller/hive.dart';
-import 'package:maleem/Screen/Widget/Expense.dart';
+import 'package:maleem/Screen/Widget/Expenses_Viewer.dart';
 import 'package:maleem/Screen/Widget/MoneySource.dart';
 
-class Homescreen extends StatelessWidget {
+class Homescreen extends StatefulWidget {
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
   final hiveController = HiveController();
 
   @override
@@ -22,19 +27,17 @@ class Homescreen extends StatelessWidget {
                 height: MediaQuery.of(context).size.height / 4.5,
                 child: PageView.builder(
                   itemCount: sourceBoxItems.length,
-                  itemBuilder: (context, index) =>
-                      MoneySourceWidget(SourceItem: sourceBoxItems[index]),
+                  itemBuilder: (context, index) {
+                    return MoneySourceWidget(
+                      onRefresh: () => setState(() {}),
+                      SourceItem: sourceBoxItems[index],
+                    );
+                  },
                 ),
               ),
 
               //Expenses
-              Expanded(
-                child: ListView.builder(
-                  itemCount: expensesBoxItems.length,
-                  itemBuilder: (context, index) =>
-                      ExpenseWidget(ExpenseItem: expensesBoxItems[index]),
-                ),
-              ),
+              Expanded(child: ExpensesViewer(items: expensesBoxItems)),
             ],
           ),
         ),
