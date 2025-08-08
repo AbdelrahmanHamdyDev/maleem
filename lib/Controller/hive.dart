@@ -18,4 +18,24 @@ class HiveController {
     final box = Hive.box<Expense>('expensesBox');
     return box.values.toList();
   }
+
+  List<Expense> getExpensesByGroup(String groupId) {
+    final box = Hive.box<Expense>('expensesBox');
+    return box.values.where((expense) => expense.groupId == groupId).toList();
+  }
+
+  List<Expense> getExpensesByMoneySource(String sourceId) {
+    final box = Hive.box<Expense>('expensesBox');
+    return box.values.where((expense) => expense.sourceId == sourceId).toList();
+  }
+
+  void deleteExpense(String expenseID) async {
+    final expensesBox = Hive.box<Expense>('expensesBox');
+
+    final keysToDelete = expensesBox.keys
+        .where((key) => expensesBox.get(key)!.id == expenseID)
+        .toList();
+
+    await expensesBox.deleteAll(keysToDelete);
+  }
 }

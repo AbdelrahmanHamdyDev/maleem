@@ -4,19 +4,15 @@ part 'MoneySource.g.dart';
 @HiveType(typeId: 3)
 class MoneySource {
   @HiveField(0)
-  String id;
-
-  @HiveField(1)
   String name;
 
-  @HiveField(2)
+  @HiveField(1)
   double amount;
 
-  @HiveField(3)
+  @HiveField(2)
   int colorValue;
 
   MoneySource({
-    required this.id,
     required this.name,
     required this.amount,
     required this.colorValue,

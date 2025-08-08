@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:maleem/Controller/hive.dart';
 import 'package:maleem/Model/Expense.dart';
+import 'package:maleem/Screen/FilterScreen.dart';
 import 'package:maleem/app_text_styles.dart';
 
 class ExpenseWidget extends StatelessWidget {
-  const ExpenseWidget({super.key, required this.ExpenseItem});
+  ExpenseWidget({super.key, required this.ExpenseItem});
 
   final Expense ExpenseItem;
+  final hiveController = HiveController();
 
   @override
   Widget build(BuildContext context) {
+    List<Expense> filtred_groupExpenses = (ExpenseItem.groupId == null)
+        ? []
+        : hiveController.getExpensesByGroup(ExpenseItem.groupId!);
+
     final is_Expense = ExpenseItem.type.name == ExpenseType.expense.name;
     final amount = ExpenseItem.amount.toStringAsFixed(2);
     return Card(
@@ -29,10 +36,16 @@ class ExpenseWidget extends StatelessWidget {
                     color: (is_Expense) ? Colors.red : Colors.green,
                   ),
                 ),
-                if (ExpenseItem.groupId != null)
+                if (filtred_groupExpenses.isNotEmpty)
                   InkWell(
-                    onTap: () =>
-                        print("This is the GroupId: ${ExpenseItem.groupId}"),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => Filterscreen(
+                          filteredItems: filtred_groupExpenses,
+                          title: ExpenseItem.groupId!,
+                        ),
+                      ),
+                    ),
                     child: Text(
                       ExpenseItem.groupId!,
                       style: AppTextStyles.groupTitle,

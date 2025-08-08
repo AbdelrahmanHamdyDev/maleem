@@ -7,18 +7,11 @@ class ExpenseGroup extends HiveObject {
   String id;
 
   @HiveField(1)
-  String name;
-
-  @HiveField(2)
   String? notes;
 
-  @HiveField(3)
+  @HiveField(2)
   DateTime createdAt;
 
-  ExpenseGroup({
-    required this.id,
-    required this.name,
-    this.notes,
-    DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  ExpenseGroup({required this.id, this.notes, DateTime? createdAt})
+    : createdAt = createdAt ?? DateTime.now();
 }
