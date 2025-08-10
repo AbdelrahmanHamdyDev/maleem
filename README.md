@@ -9,6 +9,12 @@
 - Filter expenses by group or money source
 - Delete expenses using swipe
 - Data stored locally using Hive
+- Added dedicated UI screens to allow users to add entries for:
+  • Money sources
+  • Expense groups
+  • Expenses
+- Integrated input validation and Hive storage for each box
+
 
 ## Project Structure
 

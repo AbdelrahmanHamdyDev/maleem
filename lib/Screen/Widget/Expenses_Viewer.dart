@@ -21,7 +21,8 @@ class ExpensesViewer extends StatelessWidget {
           ),
         ),
         onDismissed: (direction) {
-          hiveController.deleteExpense(items[index].id);
+          hiveController.deleteExpense(items[index]);
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Successfuly deleted the Expense")),
           );
