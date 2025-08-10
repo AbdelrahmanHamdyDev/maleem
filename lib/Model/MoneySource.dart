@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 part 'MoneySource.g.dart';
 
 @HiveType(typeId: 3)
-class MoneySource {
+class MoneySource extends HiveObject {
   @HiveField(0)
   String name;
 
