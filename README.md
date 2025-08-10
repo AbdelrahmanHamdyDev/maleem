@@ -29,12 +29,20 @@ lib/
 ├── Screen/
 │   ├── Homescreen.dart
 |   ├── FilterScreen.dart
+|   ├── AddExpenseScreen.dart
+|   ├── AddGroupScreen.dart
+|   ├── AddMoneySourceScreen.dart
 │   └── Widget/
 │       ├── Expense.dart
 |       ├── Expenses_Viewer.dart
 │       └── MoneySource.dart
+│       ├── custom_textField.dart
+│       ├── data_picker.dart
+│       ├── done_fab.dart
+│       ├── form_scaffold.dart
 ├── Main.dart
 ├── app_text_styles.dart
 ```
+
 
 > **This app is still in early development.**
