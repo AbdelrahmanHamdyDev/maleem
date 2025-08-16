@@ -5,9 +5,14 @@ import 'package:maleem/Screen/FilterScreen.dart';
 import 'package:maleem/app_text_styles.dart';
 
 class ExpenseWidget extends StatelessWidget {
-  ExpenseWidget({super.key, required this.ExpenseItem});
+  ExpenseWidget({
+    super.key,
+    required this.ExpenseItem,
+    required this.is_groupAppear,
+  });
 
   final Expense ExpenseItem;
+  final bool is_groupAppear;
   final hiveController = HiveController();
 
   @override
@@ -36,18 +41,23 @@ class ExpenseWidget extends StatelessWidget {
                     color: (is_Expense) ? Colors.red : Colors.green,
                   ),
                 ),
-                if (filtred_groupExpenses.isNotEmpty)
+                if (filtred_groupExpenses.isNotEmpty && is_groupAppear)
                   InkWell(
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => Filterscreen(
                           filteredItems: filtred_groupExpenses,
-                          title: ExpenseItem.groupId!,
+                          title: hiveController
+                              .getGroupsName(excludeId: ExpenseItem.groupId!)
+                              .first,
+                          type: filterType.group,
                         ),
                       ),
                     ),
                     child: Text(
-                      ExpenseItem.groupId!,
+                      hiveController
+                          .getGroupsName(excludeId: ExpenseItem.groupId!)
+                          .first,
                       style: AppTextStyles.groupTitle,
                     ),
                   ),

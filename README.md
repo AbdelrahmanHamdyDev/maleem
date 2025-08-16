@@ -8,13 +8,13 @@
 - Create and assign expenses to groups
 - Filter expenses by group or money source
 - Delete expenses using swipe
+- Update existing entries (money sources, groups, expenses) with adaptive UI refresh
 - Data stored locally using Hive
-- Added dedicated UI screens to allow users to add entries for:
-  • Money sources
-  • Expense groups
+- Dedicated UI screens for managing:  
+  • Money sources  
+  • Expense groups  
   • Expenses
 - Integrated input validation and Hive storage for each box
-
 
 ## Project Structure
 
@@ -29,20 +29,19 @@ lib/
 ├── Screen/
 │   ├── Homescreen.dart
 |   ├── FilterScreen.dart
-|   ├── AddExpenseScreen.dart
-|   ├── AddGroupScreen.dart
-|   ├── AddMoneySourceScreen.dart
+|   ├── saveExpenseScreen.dart
+|   ├── saveGroupScreen.dart
+|   ├── saveMoneySourceScreen.dart
 │   └── Widget/
-│       ├── Expense.dart
-|       ├── Expenses_Viewer.dart
-│       └── MoneySource.dart
 │       ├── custom_textField.dart
 │       ├── data_picker.dart
 │       ├── done_fab.dart
+│       ├── Expense.dart
+|       ├── Expenses_Viewer.dart
 │       ├── form_scaffold.dart
+│       └── MoneySource.dart
 ├── Main.dart
 ├── app_text_styles.dart
 ```
-
 
 > **This app is still in early development.**

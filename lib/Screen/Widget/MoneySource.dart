@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maleem/Controller/hive.dart';
 import 'package:maleem/Model/MoneySource.dart';
 import 'package:maleem/Screen/FilterScreen.dart';
+import 'package:maleem/Screen/SaveMoneySourceScreen.dart';
 import 'package:maleem/app_text_styles.dart';
 
 class MoneySourceWidget extends StatelessWidget {
@@ -17,8 +18,8 @@ class MoneySourceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filtred_groupExpenses = hiveController.getExpensesByMoneySource(
-      SourceItem.name,
+    final filtred_sourceExpenses = hiveController.getExpensesByMoneySource(
+      SourceItem.id,
     );
 
     return InkWell(
@@ -26,12 +27,28 @@ class MoneySourceWidget extends StatelessWidget {
         final result = await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => Filterscreen(
-              filteredItems: filtred_groupExpenses,
-              title: SourceItem.name,
+              filteredItems: filtred_sourceExpenses,
+              title: hiveController
+                  .getMoneySourceName(excludeId: SourceItem.id)
+                  .first,
+              type: filterType.source,
             ),
           ),
         );
         if (result) {
+          onRefresh();
+        }
+      },
+      onLongPress: () async {
+        final source = hiveController.getMoneySources().firstWhere(
+          (s) => s.id == SourceItem.id,
+        );
+        final result = await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => saveMoneySourceScreen(source: source),
+          ),
+        );
+        if (result == true) {
           onRefresh();
         }
       },
@@ -47,7 +64,7 @@ class MoneySourceWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(SourceItem.name, style: AppTextStyles.moneySourceTitle),
+                Text(SourceItem.title, style: AppTextStyles.moneySourceTitle),
               ],
             ),
             const Spacer(),

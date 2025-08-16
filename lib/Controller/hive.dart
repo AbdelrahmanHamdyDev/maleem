@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 const _uuid = Uuid();
 
 class HiveController {
+  //Featch data
   List<MoneySource> getMoneySources() {
     final box = Hive.box<MoneySource>('sourcesBox');
     return box.values.toList();
@@ -22,6 +23,7 @@ class HiveController {
     return box.values.toList();
   }
 
+  //Filter Data
   List<Expense> getExpensesByGroup(String groupId) {
     final box = Hive.box<Expense>('expensesBox');
     return box.values.where((expense) => expense.groupId == groupId).toList();
@@ -32,56 +34,74 @@ class HiveController {
     return box.values.where((expense) => expense.sourceId == sourceId).toList();
   }
 
-  List<String> getMoneySourceName() {
+  //get title
+  List<String> getMoneySourceName({String? excludeId}) {
     final box = Hive.box<MoneySource>('sourcesBox');
     final List<String> sourceNames = box.values
-        .map((source) => source.name)
+        .where((s) => excludeId == null || s.id == excludeId)
+        .map((source) => source.title.toLowerCase())
         .toList();
 
     return sourceNames;
   }
 
-  List<String> getGroupsName() {
+  List<String> getGroupsName({String? excludeId}) {
     final box = Hive.box<ExpenseGroup>('groupsBox');
 
     final List<String> groupNames = box.values
-        .map((group) => group.name)
+        .where((s) => excludeId == null || s.id == excludeId)
+        .map((group) => group.title.toLowerCase())
         .toList();
 
     return groupNames;
   }
 
-  bool checkGroupExist(String nameToCheck) {
+  //Still Exist?
+  bool checkGroupExist(String checkId) {
     final box = Hive.box<ExpenseGroup>('groupsBox');
-    bool exists = box.values.any((item) => item.name == nameToCheck);
+    bool exists = box.values.any((item) => item.id == checkId);
     return exists;
   }
 
-  bool checkMoneySourceExist(String nameToCheck) {
+  bool checkMoneySourceExist(String checkId) {
     final box = Hive.box<MoneySource>('sourcesBox');
-    bool exists = box.values.any((item) => item.name == nameToCheck);
+    bool exists = box.values.any((item) => item.id == checkId);
     return exists;
   }
 
-  void addGroup({required String name, required String note}) {
+  //add in the hive
+  void addGroup({required String title, required String note}) {
     final box = Hive.box<ExpenseGroup>('groupsBox');
-    box.add(ExpenseGroup(name: name, notes: (note.isEmpty) ? null : note));
+    box.add(
+      ExpenseGroup(
+        id: _uuid.v4(),
+        title: title,
+        notes: (note.isEmpty) ? null : note,
+      ),
+    );
   }
 
   void addMoneySource({
-    required String name,
+    required String title,
     required double amount,
     required int colorValue,
   }) {
     final box = Hive.box<MoneySource>('sourcesBox');
-    box.add(MoneySource(name: name, amount: amount, colorValue: colorValue));
+    box.add(
+      MoneySource(
+        id: _uuid.v4(),
+        title: title,
+        amount: amount,
+        colorValue: colorValue,
+      ),
+    );
   }
 
   void addExpense({
     required String title,
     required double amount,
     required String sourceId,
-    required String groupId,
+    required String? groupId,
     required DateTime date,
     required ExpenseType type,
   }) {
@@ -98,7 +118,7 @@ class HiveController {
       ),
     );
     final sourcesBox = Hive.box<MoneySource>('sourcesBox');
-    final source = sourcesBox.values.firstWhere((s) => s.name == sourceId);
+    final source = sourcesBox.values.firstWhere((s) => s.id == sourceId);
     source.amount = (type == ExpenseType.expense)
         ? (source.amount - amount)
         : (source.amount + amount);
@@ -106,22 +126,89 @@ class HiveController {
     source.save();
   }
 
-  void deleteExpense(Expense Selectedexpense) async {
+  //update the exist in the hive
+  void updateGroup({
+    required ExpenseGroup group,
+    required String title,
+    required String note,
+  }) {
+    group
+      ..title = title
+      ..notes = (note.isEmpty) ? null : note;
+
+    group.save();
+  }
+
+  void updateMoneySource({
+    required MoneySource source,
+    required String title,
+    required double amount,
+    required int colorValue,
+  }) {
+    source
+      ..title = title
+      ..amount = amount
+      ..colorValue = colorValue;
+
+    source.save();
+  }
+
+  void updateExpense({
+    required Expense expense,
+    required String title,
+    required double amount,
+    required String sourceId,
+    required String? groupId,
+    required DateTime date,
+    required ExpenseType type,
+  }) {
+    final sourcesBox = Hive.box<MoneySource>('sourcesBox');
+
+    final oldSource = sourcesBox.values.firstWhere(
+      (s) => s.id == expense.sourceId,
+    );
+    if (expense.type == ExpenseType.expense) {
+      oldSource.amount += expense.amount;
+    } else {
+      oldSource.amount -= expense.amount;
+    }
+    oldSource.save();
+
+    expense
+      ..title = title
+      ..amount = amount
+      ..sourceId = sourceId
+      ..groupId = (groupId == "StandAlone") ? null : groupId
+      ..date = date
+      ..type = type;
+    expense.save();
+
+    final newSource = sourcesBox.values.firstWhere((s) => s.id == sourceId);
+    if (type == ExpenseType.expense) {
+      newSource.amount -= amount;
+    } else {
+      newSource.amount += amount;
+    }
+    newSource.save();
+  }
+
+  //Delete from the hive box
+  void deleteExpense(Expense selectedExpense) async {
     final expensesBox = Hive.box<Expense>('expensesBox');
 
     final keysToDelete = expensesBox.keys
-        .where((key) => expensesBox.get(key)!.id == Selectedexpense.id)
+        .where((key) => expensesBox.get(key)!.id == selectedExpense.id)
         .toList();
 
     await expensesBox.deleteAll(keysToDelete);
 
     final sourcesBox = Hive.box<MoneySource>('sourcesBox');
     final source = sourcesBox.values.firstWhere(
-      (s) => s.name == Selectedexpense.sourceId,
+      (s) => s.id == selectedExpense.sourceId,
     );
-    source.amount = (Selectedexpense.type == ExpenseType.expense)
-        ? (source.amount - Selectedexpense.amount)
-        : (source.amount + Selectedexpense.amount);
+    source.amount = (selectedExpense.type == ExpenseType.expense)
+        ? (source.amount + selectedExpense.amount)
+        : (source.amount - selectedExpense.amount);
 
     source.save();
   }

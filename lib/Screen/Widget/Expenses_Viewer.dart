@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:maleem/Controller/hive.dart';
 import 'package:maleem/Model/Expense.dart';
+import 'package:maleem/Screen/SaveExpenseScreen.dart';
 import 'package:maleem/Screen/Widget/Expense.dart';
 
 class ExpensesViewer extends StatelessWidget {
-  ExpensesViewer({super.key, required this.items});
+  ExpensesViewer({
+    super.key,
+    required this.items,
+    required this.onRefresh,
+    required this.is_expenseGroupAppear,
+  });
 
   final List<Expense> items;
+  final Function() onRefresh;
+  final bool is_expenseGroupAppear;
   final hiveController = HiveController();
 
   @override
@@ -28,7 +36,22 @@ class ExpensesViewer extends StatelessWidget {
           );
         },
         key: ValueKey(items[index]),
-        child: ExpenseWidget(ExpenseItem: items[index]),
+        child: InkWell(
+          onLongPress: () async {
+            final result = await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SaveExpenseScreen(expense: items[index]),
+              ),
+            );
+            if (result == true) {
+              onRefresh();
+            }
+          },
+          child: ExpenseWidget(
+            ExpenseItem: items[index],
+            is_groupAppear: is_expenseGroupAppear,
+          ),
+        ),
       ),
     );
   }

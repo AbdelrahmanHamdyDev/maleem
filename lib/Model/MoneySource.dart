@@ -4,16 +4,20 @@ part 'MoneySource.g.dart';
 @HiveType(typeId: 3)
 class MoneySource extends HiveObject {
   @HiveField(0)
-  String name;
+  String id;
 
   @HiveField(1)
-  double amount;
+  String title;
 
   @HiveField(2)
+  double amount;
+
+  @HiveField(3)
   int colorValue;
 
   MoneySource({
-    required this.name,
+    required this.id,
+    required this.title,
     required this.amount,
     required this.colorValue,
   });
