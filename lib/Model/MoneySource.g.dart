@@ -17,21 +17,24 @@ class MoneySourceAdapter extends TypeAdapter<MoneySource> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return MoneySource(
-      name: fields[0] as String,
-      amount: fields[1] as double,
-      colorValue: fields[2] as int,
+      id: fields[0] as String,
+      title: fields[1] as String,
+      amount: fields[2] as double,
+      colorValue: fields[3] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, MoneySource obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.amount)
+      ..write(obj.title)
       ..writeByte(2)
+      ..write(obj.amount)
+      ..writeByte(3)
       ..write(obj.colorValue);
   }
 

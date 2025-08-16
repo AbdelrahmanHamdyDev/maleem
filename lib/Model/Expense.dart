@@ -38,7 +38,7 @@ class Expense extends HiveObject {
 @HiveType(typeId: 4)
 enum ExpenseType {
   @HiveField(0)
-  expense, // Subtracts money
+  expense,
   @HiveField(1)
-  income, // Adds money
+  income,
 }
