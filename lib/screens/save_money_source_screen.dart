@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:maleem/Controller/hive.dart';
-import 'package:maleem/Model/MoneySource.dart';
-import 'package:maleem/Screen/Widget/custom_textField.dart';
-import 'package:maleem/Screen/Widget/form_scaffold.dart';
+import 'package:maleem/model/MoneySource.dart';
+import 'package:maleem/screens/widgets/custom_textField.dart';
+import 'package:maleem/screens/widgets/form_scaffold.dart';
+import 'package:maleem/core/app_text_styles.dart';
+import 'package:maleem/core/hive_service.dart';
 
 class saveMoneySourceScreen extends StatefulWidget {
   const saveMoneySourceScreen({super.key, this.source});
@@ -27,7 +28,7 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Pick a color'),
+        title: Text('Pick a color', style: AppTextStyles.MainFont),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: selectedColor,
@@ -37,7 +38,7 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+            child: Text('Done', style: AppTextStyles.MainFont),
           ),
         ],
       ),
@@ -90,6 +91,7 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
       title: (widget.source == null)
           ? "New Money Source"
           : "Update Money Source",
+
       formKey: _formKey,
       onSave: _saveMoneySource,
       children: [
@@ -98,13 +100,18 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
           controller: _titleController,
           validator: (value) {
             if (value == null || value.isEmpty) return 'Please enter name';
+
+            // Exclude the current source name when updating
             if (SourceNames.contains(value.toLowerCase())) {
-              return 'The name already exists';
+              if (widget.source == null ||
+                  value.toLowerCase() != widget.source!.title.toLowerCase()) {
+                return 'The name already exists';
+              }
             }
+
             return null;
           },
         ),
-        const SizedBox(height: 20),
         CustomTextField(
           label: "Amount",
           controller: _amountController,
@@ -117,11 +124,13 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
             return null;
           },
         ),
-        const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Color:"),
+            Text(
+              "Color:",
+              style: AppTextStyles.MainFont.copyWith(fontSize: 18),
+            ),
             InkWell(
               onTap: _pickColor,
               child: Container(

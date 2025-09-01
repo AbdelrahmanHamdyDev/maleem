@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:maleem/Controller/hive.dart';
-import 'package:maleem/Model/Expense.dart';
-import 'package:maleem/Model/ExpenseGroup.dart';
-import 'package:maleem/Model/MoneySource.dart';
-import 'package:maleem/Screen/Widget/custom_textField.dart';
-import 'package:maleem/Screen/Widget/data_picker.dart';
-import 'package:maleem/Screen/Widget/form_scaffold.dart';
+import 'package:maleem/model/Expense.dart';
+import 'package:maleem/model/ExpenseGroup.dart';
+import 'package:maleem/model/MoneySource.dart';
+import 'package:maleem/screens/widgets/custom_textField.dart';
+import 'package:maleem/screens/widgets/data_picker.dart';
+import 'package:maleem/screens/widgets/form_scaffold.dart';
+import 'package:maleem/core/app_text_styles.dart';
+import 'package:maleem/core/hive_service.dart';
+import 'package:maleem/screens/save_group_screen.dart';
 
 class SaveExpenseScreen extends StatefulWidget {
-  const SaveExpenseScreen({super.key, this.expense});
+  const SaveExpenseScreen({
+    super.key,
+    this.expense,
+    required this.TransfareType,
+  });
 
   final Expense? expense;
+  final TransfareType;
 
   @override
   State<SaveExpenseScreen> createState() => _SaveExpenseScreenState();
@@ -27,7 +34,6 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
   String? _selectedMoneySource;
   String? _selectedGroup;
   DateTime? _selectedDate;
-  ExpenseType _selectedType = ExpenseType.expense;
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -36,7 +42,18 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now().add(const Duration(days: 4)),
     );
-    if (picked != null) setState(() => _selectedDate = picked);
+    if (picked != null) {
+      final now = DateTime.now();
+      final combined = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        now.hour,
+        now.minute,
+      );
+
+      setState(() => _selectedDate = combined);
+    }
   }
 
   void _saveExpense() {
@@ -55,7 +72,7 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
         date: _selectedDate!,
         sourceId: _selectedMoneySource!,
         groupId: _selectedGroup,
-        type: _selectedType,
+        type: widget.TransfareType,
       );
     } else {
       hiveController.updateExpense(
@@ -65,7 +82,7 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
         sourceId: _selectedMoneySource!,
         groupId: _selectedGroup,
         date: _selectedDate!,
-        type: _selectedType,
+        type: widget.TransfareType,
       );
     }
 
@@ -82,7 +99,6 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
       _selectedMoneySource = widget.expense!.sourceId;
       _selectedGroup = widget.expense!.groupId;
       _selectedDate = widget.expense!.date;
-      _selectedType = widget.expense!.type;
     }
     allMoneySource = hiveController.getMoneySources();
     allGroups = hiveController.getGroups();
@@ -109,7 +125,6 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
           validator: (value) =>
               value == null || value.isEmpty ? 'Please enter a title' : null,
         ),
-        const SizedBox(height: 20),
         CustomTextField(
           label: "Amount",
           controller: _amountController,
@@ -122,12 +137,12 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
             return null;
           },
         ),
-        const SizedBox(height: 20),
         DropdownButtonFormField<String>(
-          value: _selectedMoneySource,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          initialValue: _selectedMoneySource,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: "Select Money Source",
+            labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 12),
           ),
           items: allMoneySource
               .map(
@@ -142,45 +157,55 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
               ? 'Please select a money source'
               : null,
         ),
-        const SizedBox(height: 20),
         DropdownButtonFormField<String>(
-          value: _selectedGroup,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          initialValue: _selectedGroup,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: "Select Group",
+            labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 12),
           ),
           items: [
-            const DropdownMenuItem(value: null, child: Text("StandAlone")),
+            const DropdownMenuItem(child: Text("StandAlone")),
             ...allGroups.map(
               (group) =>
                   DropdownMenuItem(value: group.id, child: Text(group.title)),
             ),
+            const DropdownMenuItem(
+              value: "new_group",
+              child: Text("+ Add New Group"),
+            ),
           ],
-          onChanged: (value) => setState(() => _selectedGroup = value),
+          onChanged: (value) async {
+            if (value == "new_group") {
+              final result = await showModalBottomSheet<bool>(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (context) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    child: const SaveGroupScreen(),
+                  ),
+                ),
+              );
+
+              if (result == true) {
+                setState(() {
+                  allGroups = hiveController.getGroups();
+                  _selectedGroup = allGroups.last.id;
+                });
+              }
+            } else {
+              setState(() => _selectedGroup = value);
+            }
+          },
         ),
-        const SizedBox(height: 20),
         DatePickerRow(selectedDate: _selectedDate, onPickDate: _pickDate),
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(
-              child: RadioListTile(
-                title: const Text("Expense"),
-                value: ExpenseType.expense,
-                groupValue: _selectedType,
-                onChanged: (value) => setState(() => _selectedType = value!),
-              ),
-            ),
-            Expanded(
-              child: RadioListTile(
-                title: const Text("Income"),
-                value: ExpenseType.income,
-                groupValue: _selectedType,
-                onChanged: (value) => setState(() => _selectedType = value!),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
