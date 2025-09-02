@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maleem/core/app_text_styles.dart';
 import 'done_fab.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FormScaffold extends StatelessWidget {
   final String title;
@@ -23,11 +24,11 @@ class FormScaffold extends StatelessWidget {
       floatingActionButton: DoneFab(onPressed: onSave),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           child: Form(
             key: formKey,
             child: Column(
-              spacing: 20,
+              spacing: 20.h,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: children,
             ),

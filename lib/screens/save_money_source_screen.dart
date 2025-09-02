@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:maleem/core/ui_helper.dart';
 import 'package:maleem/model/MoneySource.dart';
 import 'package:maleem/screens/widgets/custom_textField.dart';
 import 'package:maleem/screens/widgets/form_scaffold.dart';
 import 'package:maleem/core/app_text_styles.dart';
-import 'package:maleem/core/hive_service.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class saveMoneySourceScreen extends StatefulWidget {
   const saveMoneySourceScreen({super.key, this.source});
@@ -16,54 +16,12 @@ class saveMoneySourceScreen extends StatefulWidget {
 }
 
 class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
-  final HiveController hiveController = HiveController();
   List<String> SourceNames = [];
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   Color selectedColor = Colors.white;
-
-  void _pickColor() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Pick a color', style: AppTextStyles.MainFont),
-        content: SingleChildScrollView(
-          child: ColorPicker(
-            pickerColor: selectedColor,
-            onColorChanged: (color) => setState(() => selectedColor = color),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Done', style: AppTextStyles.MainFont),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _saveMoneySource() {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (widget.source == null) {
-      hiveController.addMoneySource(
-        title: _titleController.text,
-        amount: double.parse(_amountController.text),
-        colorValue: selectedColor.toARGB32(),
-      );
-    } else {
-      hiveController.updateMoneySource(
-        source: widget.source!,
-        title: _titleController.text,
-        amount: double.parse(_amountController.text),
-        colorValue: selectedColor.toARGB32(),
-      );
-    }
-    Navigator.pop(context, true);
-  }
 
   @override
   void initState() {
@@ -93,7 +51,16 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
           : "Update Money Source",
 
       formKey: _formKey,
-      onSave: _saveMoneySource,
+      onSave: () => UIHelper.saveMoneySource(
+        formKey: _formKey,
+        context: context,
+        hiveController: hiveController,
+        titleController: _titleController,
+        amountController: _amountController,
+        selectedColor: selectedColor,
+        source: widget.source,
+      ),
+
       children: [
         CustomTextField(
           label: "Name",
@@ -129,17 +96,25 @@ class _saveMoneySourceScreenState extends State<saveMoneySourceScreen> {
           children: [
             Text(
               "Color:",
-              style: AppTextStyles.MainFont.copyWith(fontSize: 18),
+              style: AppTextStyles.MainFont.copyWith(fontSize: 18.sp),
             ),
             InkWell(
-              onTap: _pickColor,
+              onTap: () async {
+                final color = await UIHelper.pickColor(
+                  context: context,
+                  initialColor: selectedColor,
+                );
+                if (color != null) {
+                  setState(() => selectedColor = color);
+                }
+              },
               child: Container(
-                width: 30,
-                height: 30,
+                width: 30.w,
+                height: 30.h,
                 decoration: BoxDecoration(
                   color: selectedColor,
                   shape: BoxShape.circle,
-                  border: Border.all(width: 0.5),
+                  border: Border.all(width: 0.5.w),
                 ),
               ),
             ),

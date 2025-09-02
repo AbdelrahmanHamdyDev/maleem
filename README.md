@@ -2,7 +2,7 @@
 
 **Maleem** is a Flutter-based **personal expense tracker** that helps you manage income, expenses, and track your spending using grouped categories and multiple money sources.
 
-This is **Version 1 (v1)** of the app — the foundation release with core features and clean architecture.
+This is **Version 1.1.0 (v1.1.0)** of the app — a stable release with responsive design and internal code improvements.
 
 ## Features
 
@@ -10,11 +10,13 @@ This is **Version 1 (v1)** of the app — the foundation release with core featu
 - Manage **multiple money sources** with custom colors (cash, bank accounts, wallets)
 - Create and assign **expense groups** (e.g., trips, bills, shopping)
 - **Filter and search** by group or money source
+- **Responsive UI design** with `flutter_screenutil` → adapts layouts across different screen sizes (mobile & tablets)
 - **Dynamic Color Support** → adapts to system Material You colors when available, and falls back to custom theme colors when not
 - **Add, update, and delete** entries (expenses, income, groups, sources) with adaptive UI refresh
 - **Swipe to delete** expenses and sources
 - Data stored locally using **Hive** for fast and secure persistence
 - Integrated input validation across forms
+- **Refactored utilities** (e.g., date picker & save logic moved to `UIHelper`) for cleaner and maintainable code
 
 ---
 
@@ -25,6 +27,7 @@ lib/
 ├── core/
 │   ├── app_text_styles.dart
 │   └── hive_service.dart
+│   └── ui_helper.dart
 ├── models/
 │   ├── expense.dart
 │   ├── expense.g.dart
@@ -53,12 +56,8 @@ lib/
 
 ## Screenshots
 
-| Dark Dashboard                               | Add Expense                                 | Add Money Sources                                   | Add Groups                            |
-| -------------------------------------------- | ------------------------------------------- | --------------------------------------------------- | ------------------------------------- |
-| ![Dashboard](screenshots/dark_dashboard.png) | ![Add Expense](screenshots/add_expense.png) | ![Money Sources](screenshots/add_money_sources.png) | ![Groups](screenshots/add_groups.png) |
-
-| Light Dashboard                               | Money Sources                                   | Groups                            |
-| --------------------------------------------- | ----------------------------------------------- | --------------------------------- |
-| ![Dashboard](screenshots/light_dashboard.png) | ![Money Sources](screenshots/money_sources.png) | ![Groups](screenshots/groups.png) |
+<pre>
+<img src="new_light_dashboard.png" width="30%">     <img src="new_dark_dashboard.png" width="30%">     <img src="new_add_money_sources.png" width="30%">     <img src="new_money_sources.png" width="30%">     <img src="new_add_expense.png" width="30%">     <img src="new_add_groups.png" width="30%">     <img src="new_groups.png" width="30%">
+</pre>
 
 ---

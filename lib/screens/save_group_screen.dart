@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:maleem/core/ui_helper.dart';
 import 'package:maleem/model/ExpenseGroup.dart';
 import 'package:maleem/screens/widgets/custom_textField.dart';
 import 'package:maleem/screens/widgets/form_scaffold.dart';
 import 'package:maleem/core/app_text_styles.dart';
-import 'package:maleem/core/hive_service.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SaveGroupScreen extends StatefulWidget {
   const SaveGroupScreen({super.key, this.group});
@@ -15,29 +16,11 @@ class SaveGroupScreen extends StatefulWidget {
 }
 
 class _SaveGroupScreenState extends State<SaveGroupScreen> {
-  final HiveController hiveController = HiveController();
   List<String> allGroupsName = [];
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _noteController = TextEditingController();
-
-  void _saveGroup() {
-    if (!_formKey.currentState!.validate()) return;
-    if (widget.group == null) {
-      hiveController.addGroup(
-        title: _titleController.text,
-        note: _noteController.text,
-      );
-    } else {
-      hiveController.updateGroup(
-        group: widget.group!,
-        title: _titleController.text,
-        note: _noteController.text,
-      );
-    }
-    Navigator.pop(context, true);
-  }
 
   @override
   void initState() {
@@ -62,10 +45,10 @@ class _SaveGroupScreenState extends State<SaveGroupScreen> {
     List<Widget> screenItems = [
       if (widget.group == null)
         Padding(
-          padding: const EdgeInsets.only(left: 10, top: 20, bottom: 50),
+          padding: EdgeInsets.only(left: 10.w, top: 20.h, bottom: 50.h),
           child: Text(
             "New Group",
-            style: AppTextStyles.MainFont.copyWith(fontSize: 25),
+            style: AppTextStyles.MainFont.copyWith(fontSize: 25.sp),
           ),
         ),
       CustomTextField(
@@ -81,17 +64,27 @@ class _SaveGroupScreenState extends State<SaveGroupScreen> {
       ),
       CustomTextField(label: "Note (Optional)", controller: _noteController),
       if (widget.group == null)
-        ElevatedButton(onPressed: _saveGroup, child: const Text("New Group")),
+        ElevatedButton(
+          onPressed: () => UIHelper.saveGroup(
+            formKey: _formKey,
+            context: context,
+            hiveController: hiveController,
+            titleController: _titleController,
+            noteController: _noteController,
+            group: widget.group,
+          ),
+          child: const Text("New Group"),
+        ),
     ];
 
     return (widget.group == null)
         ? SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  spacing: 20,
+                  spacing: 20.h,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: screenItems,
                 ),
@@ -101,7 +94,14 @@ class _SaveGroupScreenState extends State<SaveGroupScreen> {
         : FormScaffold(
             title: "Update Group",
             formKey: _formKey,
-            onSave: _saveGroup,
+            onSave: () => UIHelper.saveGroup(
+              formKey: _formKey,
+              context: context,
+              hiveController: hiveController,
+              titleController: _titleController,
+              noteController: _noteController,
+              group: widget.group,
+            ),
             children: screenItems,
           );
   }
