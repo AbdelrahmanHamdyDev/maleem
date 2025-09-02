@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maleem/core/ui_helper.dart';
 import 'package:maleem/model/Expense.dart';
 import 'package:maleem/model/ExpenseGroup.dart';
 import 'package:maleem/model/MoneySource.dart';
@@ -6,8 +7,8 @@ import 'package:maleem/screens/widgets/custom_textField.dart';
 import 'package:maleem/screens/widgets/data_picker.dart';
 import 'package:maleem/screens/widgets/form_scaffold.dart';
 import 'package:maleem/core/app_text_styles.dart';
-import 'package:maleem/core/hive_service.dart';
 import 'package:maleem/screens/save_group_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SaveExpenseScreen extends StatefulWidget {
   const SaveExpenseScreen({
@@ -24,7 +25,6 @@ class SaveExpenseScreen extends StatefulWidget {
 }
 
 class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
-  final HiveController hiveController = HiveController();
   List<MoneySource> allMoneySource = [];
   List<ExpenseGroup> allGroups = [];
 
@@ -34,60 +34,6 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
   String? _selectedMoneySource;
   String? _selectedGroup;
   DateTime? _selectedDate;
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now().add(const Duration(days: 4)),
-    );
-    if (picked != null) {
-      final now = DateTime.now();
-      final combined = DateTime(
-        picked.year,
-        picked.month,
-        picked.day,
-        now.hour,
-        now.minute,
-      );
-
-      setState(() => _selectedDate = combined);
-    }
-  }
-
-  void _saveExpense() {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (widget.expense == null) {
-      if (_selectedDate == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Please select a Date")));
-        return;
-      }
-      hiveController.addExpense(
-        title: _titleController.text,
-        amount: double.parse(_amountController.text),
-        date: _selectedDate!,
-        sourceId: _selectedMoneySource!,
-        groupId: _selectedGroup,
-        type: widget.TransfareType,
-      );
-    } else {
-      hiveController.updateExpense(
-        expense: widget.expense!,
-        title: _titleController.text,
-        amount: double.parse(_amountController.text),
-        sourceId: _selectedMoneySource!,
-        groupId: _selectedGroup,
-        date: _selectedDate!,
-        type: widget.TransfareType,
-      );
-    }
-
-    Navigator.pop(context, true);
-  }
 
   @override
   void initState() {
@@ -117,7 +63,18 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
     return FormScaffold(
       title: (widget.expense == null) ? "New Expense" : "Update Expense",
       formKey: _formKey,
-      onSave: _saveExpense,
+      onSave: () => UIHelper.saveExpense(
+        formKey: _formKey,
+        context: context,
+        hiveController: hiveController,
+        titleController: _titleController,
+        amountController: _amountController,
+        selectedDate: _selectedDate,
+        selectedMoneySource: _selectedMoneySource!,
+        selectedGroup: _selectedGroup,
+        transferType: widget.TransfareType,
+        expense: widget.expense,
+      ),
       children: [
         CustomTextField(
           label: "Title",
@@ -142,7 +99,7 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: "Select Money Source",
-            labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 12),
+            labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 12.sp),
           ),
           items: allMoneySource
               .map(
@@ -162,7 +119,7 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: "Select Group",
-            labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 12),
+            labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 12.sp),
           ),
           items: [
             const DropdownMenuItem(child: Text("StandAlone")),
@@ -180,8 +137,10 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
               final result = await showModalBottomSheet<bool>(
                 context: context,
                 isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20.r),
+                  ),
                 ),
                 builder: (context) => Padding(
                   padding: EdgeInsets.only(
@@ -205,7 +164,18 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
             }
           },
         ),
-        DatePickerRow(selectedDate: _selectedDate, onPickDate: _pickDate),
+        DatePickerRow(
+          selectedDate: _selectedDate,
+          onPickDate: () async {
+            final picked = await UIHelper.pickDate(
+              context: context,
+              initialDate: _selectedDate,
+            );
+            if (picked != null) {
+              setState(() => _selectedDate = picked);
+            }
+          },
+        ),
       ],
     );
   }

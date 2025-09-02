@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:maleem/model/Expense.dart';
 import 'package:maleem/model/ExpenseGroup.dart';
@@ -32,12 +33,19 @@ void main() async {
               seedColor: const Color(0xFF00ADB5),
               brightness: Brightness.dark,
             );
-        return MaterialApp(
-          theme: ThemeData(colorScheme: lightScheme),
-          darkTheme: ThemeData(colorScheme: darkScheme),
-          themeAnimationCurve: Curves.fastOutSlowIn,
-          themeAnimationDuration: const Duration(microseconds: 500),
-          home: Homescreen(),
+        return ScreenUtilInit(
+          designSize: const Size(360, 690),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (_, child) {
+            return MaterialApp(
+              theme: ThemeData(colorScheme: lightScheme),
+              darkTheme: ThemeData(colorScheme: darkScheme),
+              themeAnimationCurve: Curves.fastOutSlowIn,
+              themeAnimationDuration: const Duration(microseconds: 500),
+              home: Homescreen(),
+            );
+          },
         );
       },
     ),

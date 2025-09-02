@@ -3,6 +3,7 @@ import 'package:maleem/model/Expense.dart';
 import 'package:maleem/screens/widgets/expenses_viewer.dart';
 import 'package:maleem/core/hive_service.dart';
 import 'package:maleem/screens/save_group_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum filterType { group, source }
 
@@ -60,10 +61,7 @@ class _FilterscreenState extends State<Filterscreen> {
         child: (widget.filteredItems.isEmpty)
             ? const Center(child: Text("No Expenses Found"))
             : Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 child: ExpensesViewer(
                   items: widget.filteredItems,
                   onRefresh: () => setState(() {}),

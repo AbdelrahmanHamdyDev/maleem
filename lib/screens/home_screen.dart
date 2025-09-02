@@ -7,6 +7,7 @@ import 'package:maleem/core/app_text_styles.dart';
 import 'package:maleem/core/hive_service.dart';
 import 'package:maleem/screens/save_expense_screen.dart';
 import 'package:maleem/screens/save_money_source_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Homescreen extends StatefulWidget {
   @override
@@ -23,10 +24,10 @@ class _HomescreenState extends State<Homescreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 20,
+            spacing: 20.h,
             children: [
               //TotalBalaned
               Text.rich(
@@ -55,7 +56,7 @@ class _HomescreenState extends State<Homescreen> {
                       child: DottedBorder(
                         options: RoundedRectDottedBorderOptions(
                           dashPattern: [10, 5],
-                          radius: const Radius.circular(20),
+                          radius: Radius.circular(20.r),
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                         child: InkWell(
@@ -106,18 +107,18 @@ class _HomescreenState extends State<Homescreen> {
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.r),
+                          topRight: Radius.circular(20.r),
                         ),
                       ),
-                      padding: const EdgeInsets.only(
-                        top: 50,
-                        bottom: 10,
-                        left: 5,
-                        right: 5,
+                      padding: EdgeInsets.only(
+                        top: 50.h,
+                        bottom: 10.h,
+                        left: 5.w,
+                        right: 5.w,
                       ),
-                      margin: const EdgeInsets.only(top: 30),
+                      margin: EdgeInsets.only(top: 30.h),
                       child: ExpensesViewer(
                         items: expensesBoxItems,
                         onRefresh: () => setState(() {}),
@@ -127,8 +128,8 @@ class _HomescreenState extends State<Homescreen> {
                     Align(
                       alignment: AlignmentGeometry.topCenter,
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 30),
-                        height: 70,
+                        margin: EdgeInsets.symmetric(horizontal: 30.w),
+                        height: 70.h,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(10),
@@ -155,7 +156,7 @@ class _HomescreenState extends State<Homescreen> {
                                 },
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  spacing: 10,
+                                  spacing: 10.h,
                                   children: [
                                     const Icon(Icons.call_made),
                                     Text(
@@ -188,7 +189,7 @@ class _HomescreenState extends State<Homescreen> {
                                 },
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  spacing: 10,
+                                  spacing: 10.h,
                                   children: [
                                     const Icon(Icons.call_received),
                                     Text(

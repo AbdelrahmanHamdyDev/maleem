@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maleem/core/app_text_styles.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -22,7 +23,7 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 14),
+        labelStyle: AppTextStyles.MainFont.copyWith(fontSize: 14.sp),
         border: const OutlineInputBorder(),
       ),
       validator: validator,

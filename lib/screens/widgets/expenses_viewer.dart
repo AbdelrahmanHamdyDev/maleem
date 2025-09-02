@@ -3,6 +3,7 @@ import 'package:maleem/model/Expense.dart';
 import 'package:maleem/screens/widgets/expense_item.dart';
 import 'package:maleem/core/hive_service.dart';
 import 'package:maleem/screens/save_expense_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ExpensesViewer extends StatelessWidget {
   ExpensesViewer({
@@ -25,7 +26,7 @@ class ExpensesViewer extends StatelessWidget {
         background: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.error,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
           ),
         ),
         onDismissed: (direction) async {
@@ -52,7 +53,7 @@ class ExpensesViewer extends StatelessWidget {
             }
           },
           child: ExpenseWidget(
-            ExpenseItem: items[index],
+            expenseItem: items[index],
             is_groupAppear: is_expenseGroupAppear,
           ),
         ),
