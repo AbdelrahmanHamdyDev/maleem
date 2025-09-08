@@ -9,7 +9,6 @@ import 'package:maleem/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Hive.initFlutter();
 
   Hive.registerAdapter(MoneySourceAdapter());
@@ -17,20 +16,29 @@ void main() async {
   Hive.registerAdapter(ExpenseAdapter());
   Hive.registerAdapter(ExpenseTypeAdapter());
 
-  await Hive.openBox<MoneySource>('sourcesBox');
-  await Hive.openBox<ExpenseGroup>('groupsBox');
-  await Hive.openBox<Expense>('expensesBox');
+  await Future.wait([
+    Hive.openBox<MoneySource>('sourcesBox'),
+    Hive.openBox<ExpenseGroup>('groupsBox'),
+    Hive.openBox<Expense>('expensesBox'),
+  ]);
 
-  runApp(
-    DynamicColorBuilder(
+  runApp(MaleemApp());
+}
+
+class MaleemApp extends StatelessWidget {
+  const MaleemApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         ColorScheme lightScheme =
             lightDynamic ??
-            ColorScheme.fromSeed(seedColor: const Color(0xFF00ADB5));
+            ColorScheme.fromSeed(seedColor: const Color(0xFFffc813));
         ColorScheme darkScheme =
             darkDynamic ??
             ColorScheme.fromSeed(
-              seedColor: const Color(0xFF00ADB5),
+              seedColor: const Color(0xFFffc813),
               brightness: Brightness.dark,
             );
         return ScreenUtilInit(
@@ -48,6 +56,6 @@ void main() async {
           },
         );
       },
-    ),
-  );
+    );
+  }
 }

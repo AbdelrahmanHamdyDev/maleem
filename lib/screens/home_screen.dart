@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:maleem/model/Expense.dart';
+import 'package:maleem/model/MoneySource.dart';
 import 'package:maleem/screens/widgets/expenses_viewer.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:maleem/screens/widgets/money_source_card.dart';
@@ -8,6 +10,7 @@ import 'package:maleem/core/hive_service.dart';
 import 'package:maleem/screens/save_expense_screen.dart';
 import 'package:maleem/screens/save_money_source_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 
 class Homescreen extends StatefulWidget {
   @override
@@ -17,10 +20,68 @@ class Homescreen extends StatefulWidget {
 class _HomescreenState extends State<Homescreen> {
   final hiveController = HiveController();
 
+  // HomeWidget stuff
+  final String appGroupId = "group.maleemApp";
+  final String androidWidgetName = "MaleemWidget";
+  final String dataKey = "text_from_flutter_app";
+
+  late List<MoneySource> sourceBoxItems;
+  late List<Expense> expensesBoxItems;
+  late double totalBalance;
+  bool _isLoading = true;
+
+  Future<void> _updateWidgetBalance(double totalBalance) async {
+    //save HomeWidget
+    await HomeWidget.saveWidgetData(dataKey, totalBalance.toStringAsFixed(2));
+
+    //update HomeWidget
+    await HomeWidget.updateWidget(androidName: androidWidgetName);
+  }
+
+  Future<void> _loadData() async {
+    _isLoading = true;
+    sourceBoxItems = hiveController.getMoneySources();
+    expensesBoxItems = hiveController.getExpenses();
+    totalBalance = hiveController.getTotalMoneySourceAmount();
+
+    await _updateWidgetBalance(totalBalance);
+  }
+
+  Future<void> _initializeApp() async {
+    // Initialize HomeWidget
+    await HomeWidget.setAppGroupId(appGroupId);
+
+    await _loadData();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await _loadData();
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final sourceBoxItems = hiveController.getMoneySources();
-    final expensesBoxItems = hiveController.getExpenses();
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(child: Lottie.asset('assets/logo_animation.json')),
+      );
+    }
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -36,9 +97,7 @@ class _HomescreenState extends State<Homescreen> {
                   style: AppTextStyles.MainFont,
                   children: [
                     TextSpan(
-                      text: hiveController
-                          .getTotalMoneySourceAmount()
-                          .toStringAsFixed(2),
+                      text: totalBalance.toStringAsFixed(2),
                       style: AppTextStyles.Totalbalancedamount.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -68,7 +127,7 @@ class _HomescreenState extends State<Homescreen> {
                               ),
                             );
                             if (result == true) {
-                              setState(() {});
+                              _refreshData();
                             }
                           },
                           child: RotatedBox(
@@ -90,7 +149,7 @@ class _HomescreenState extends State<Homescreen> {
                         itemCount: sourceBoxItems.length,
                         itemBuilder: (context, index) {
                           return MoneySourceWidget(
-                            onRefresh: () => setState(() {}),
+                            onRefresh: () => _refreshData(),
                             SourceItem: sourceBoxItems[index],
                           );
                         },
@@ -121,7 +180,7 @@ class _HomescreenState extends State<Homescreen> {
                       margin: EdgeInsets.only(top: 30.h),
                       child: ExpensesViewer(
                         items: expensesBoxItems,
-                        onRefresh: () => setState(() {}),
+                        onRefresh: () => _refreshData(),
                         is_expenseGroupAppear: true,
                       ),
                     ),
@@ -151,7 +210,7 @@ class _HomescreenState extends State<Homescreen> {
                                         ),
                                       );
                                   if (result == true) {
-                                    setState(() {});
+                                    _refreshData();
                                   }
                                 },
                                 child: Column(
@@ -184,7 +243,7 @@ class _HomescreenState extends State<Homescreen> {
                                         ),
                                       );
                                   if (result == true) {
-                                    setState(() {});
+                                    _refreshData();
                                   }
                                 },
                                 child: Column(

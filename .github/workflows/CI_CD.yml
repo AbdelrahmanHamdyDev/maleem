@@ -2,10 +2,10 @@ name: Flutter CI_CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
-    
+    branches: ["main"]
+
 permissions:
   contents: write
 
@@ -18,14 +18,17 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.2'
-          channel: 'stable'
+          flutter-version: "3.35.2"
+          channel: "stable"
 
       - name: Ensure project structure
-        run: flutter create --platforms=android,ios,web .
+        run: flutter create .
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate Launcher Icon
+        run: flutter pub run flutter_launcher_icons
 
       - name: Build APK
         run: flutter build apk --release

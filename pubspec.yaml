@@ -2,7 +2,7 @@ name: maleem
 description: "Maleem - A personal expense tracker app built with Flutter (v1)."
 publish_to: "none"
 
-version: 1.1.0+1
+version: 1.2.0+1
 
 environment:
   sdk: ^3.8.1
@@ -17,6 +17,7 @@ dependencies:
   dynamic_color: ^1.8.1
   flutter_screenutil: ^5.9.3
   dotted_border: ^3.1.0
+  lottie: ^3.3.1
 
   # Local Database
   hive: ^2.2.3
@@ -26,6 +27,8 @@ dependencies:
   # Utilities
   uuid: ^4.5.1
   flutter_colorpicker: ^1.1.0
+  home_widget: ^0.8.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +39,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logo_animation.json
+    - assets/MaleemLogo.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/MaleemLogo.png"
+  min_sdk_android: 21
